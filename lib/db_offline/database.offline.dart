@@ -23,24 +23,28 @@ class DatabaseHelper {
 
   onCreate(Database db, int version) async {
     await db.execute('''
-    CREATE TABLE locations (
-      id INTEGER PRIMARY KEY,
-      name TEXT,
-      latitude REAL,
-      longitude REAL
-    )
+      CREATE TABLE locations (
+        id INTEGER PRIMARY KEY,
+        name TEXT,
+        latitude REAL,
+        longitude REAL,
+        street TEXT,
+        state TEXT
+      )
     ''');
 
     await db.execute('''
-  CREATE TABLE attendances (
-    id INTEGER PRIMARY KEY,
-    locationId INTEGER,
-    timestamp TEXT,
-    latitude REAL,
-    longitude REAL,
-    FOREIGN KEY(locationId) REFERENCES locations(id)
-  )
-  ''');
+      CREATE TABLE attendances (
+        id INTEGER PRIMARY KEY,
+        locationId INTEGER,
+        timestamp TEXT,
+        latitude REAL,
+        longitude REAL,
+        street TEXT,
+        state TEXT,
+        FOREIGN KEY(locationId) REFERENCES locations(id)
+      )
+    ''');
   }
 
   // function untuk menambahkan lokasi

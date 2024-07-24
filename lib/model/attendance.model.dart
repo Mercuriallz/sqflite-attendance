@@ -4,9 +4,11 @@ class Attendance {
   final DateTime timestamp;
   final double latitude;
   final double longitude;
+  final String street;
+  final String state;
 
 
-  Attendance({this.id, required this.locationId, required this.timestamp, required this.latitude, required this.longitude});
+  Attendance({this.id, required this.locationId, required this.timestamp, required this.latitude, required this.longitude, required this.street, required this.state});
 
   Map<String, dynamic> toMap() {
     return {
@@ -15,6 +17,8 @@ class Attendance {
       'timestamp': timestamp.toIso8601String(),
       'latitude': latitude,
       'longitude': longitude,
+      'street': street,
+      'state': state
     };
   }
 }

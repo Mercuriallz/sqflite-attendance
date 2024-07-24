@@ -42,6 +42,8 @@ class AttendanceHistoryPageState extends State<AttendanceHistoryPage> {
       timestamp: DateTime.parse(e['timestamp']),
       latitude: e['latitude'],
       longitude: e['longitude'],
+      street: e['street'],
+      state: e['state']
     )).toList();
     this.locationNames = locationNames;
   });

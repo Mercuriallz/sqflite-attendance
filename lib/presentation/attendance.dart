@@ -1,5 +1,3 @@
-// ignore_for_file: use_build_context_synchronously, prefer_const_constructors
-
 import 'package:attend_mobile/constant/textstyle.dart';
 import 'package:attend_mobile/constant/utils/location.dart';
 import 'package:attend_mobile/db_offline/database.offline.dart';
@@ -44,6 +42,8 @@ class AddAttendanceState extends State<AddAttendance> {
           name: e['name'],
           latitude: e['latitude'],
           longitude: e['longitude'],
+          street: e['street'],
+          state: e['state']
         )).toList();
       });
     } catch (e) {
@@ -54,48 +54,48 @@ class AddAttendanceState extends State<AddAttendance> {
   }
 
   fetchCurrentLocation() async {
-  setState(() {
-    isLoadingLocation = true;
-  });
-  try {
-    currentPosition = await LocationUtils.getCurrentLocation();
-    if (selectedLocation != null && currentPosition != null) {
-      List<Placemark> placemarks = await placemarkFromCoordinates(
-          currentPosition!.latitude, currentPosition!.longitude);
-      if (placemarks.isNotEmpty) {
-        Placemark placemark = placemarks[0];
-        if (mounted) { 
-          setState(() {
-            stateName = placemark.administrativeArea ?? "";
-            streetName = placemark.street ?? "";
-          });
+    setState(() {
+      isLoadingLocation = true;
+    });
+    try {
+      currentPosition = await LocationUtils.getCurrentLocation();
+      if (selectedLocation != null && currentPosition != null) {
+        List<Placemark> placemarks = await placemarkFromCoordinates(
+            currentPosition!.latitude, currentPosition!.longitude);
+        if (placemarks.isNotEmpty) {
+          Placemark placemark = placemarks[0];
+          if (mounted) {
+            setState(() {
+              stateName = placemark.administrativeArea ?? "";
+              streetName = placemark.street ?? "";
+            });
+          }
+        }
+
+        if (mounted) {
+          distance = Geolocator.distanceBetween(
+            selectedLocation!.latitude,
+            selectedLocation!.longitude,
+            currentPosition!.latitude,
+            currentPosition!.longitude,
+          );
+          setState(() {});
         }
       }
-
-      if (mounted) {  
-        distance = Geolocator.distanceBetween(
-          selectedLocation!.latitude,
-          selectedLocation!.longitude,
-          currentPosition!.latitude,
-          currentPosition!.longitude,
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString())),
         );
-        setState(() {});  
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          isLoadingLocation = false;
+        });
       }
     }
-  } catch (e) {
-    if (mounted) { 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString())),
-      );
-    }
-  } finally {
-    if (mounted) {  
-      setState(() {
-        isLoadingLocation = false;
-      });
-    }
   }
-}
 
   saveAttendance() async {
     if (selectedLocation == null) {
@@ -129,6 +129,8 @@ class AddAttendanceState extends State<AddAttendance> {
           timestamp: DateTime.now(),
           latitude: currentPosition!.latitude,
           longitude: currentPosition!.longitude,
+          street: streetName,
+          state: stateName
         );
         await DatabaseHelper().insertAttendance(attendance.toMap());
         EasyLoading.showSuccess("Berhasil attendance!");
@@ -220,6 +222,11 @@ class AddAttendanceState extends State<AddAttendance> {
                       "Jalan: $streetName",
                       style: smallBlackText
                     ),
+                     const SizedBox(height: 4),
+                     Text(
+                      "Provinsi: $stateName",
+                      style: smallBlackText
+                    ),
                   ],
                 ),
               ),
@@ -228,12 +235,12 @@ class AddAttendanceState extends State<AddAttendance> {
               Text(
                 "Jarak ke lokasi yang dipilih: ${distance!.toStringAsFixed(2)} meter",
                 style: mediumBlackTextB,
-              ) : 
+              ) : const SizedBox(),
             const Spacer(),
             ElevatedButton(
               onPressed: isSaving ? null : saveAttendance,
               style: ElevatedButton.styleFrom(
-                minimumSize: Size(double.infinity, 50),
+                minimumSize: const Size(double.infinity, 50),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),

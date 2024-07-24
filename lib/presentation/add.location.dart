@@ -29,11 +29,12 @@ class AddLocationState extends State<AddLocation> {
     getCurrentLocation();
   }
 
-
   Future<void> getCurrentLocation() async {
+    EasyLoading.show(status: 'Fetching location...');
     try {
       currentPosition = await LocationUtils.getCurrentLocation();
       if (currentPosition != null) {
+        print("Current position: ${currentPosition!.latitude}, ${currentPosition!.longitude}");
         List<Placemark> placemarks = await placemarkFromCoordinates(
             currentPosition!.latitude, currentPosition!.longitude);
         if (placemarks.isNotEmpty) {
@@ -43,12 +44,21 @@ class AddLocationState extends State<AddLocation> {
             streetName = placemark.street ?? "";
             locationError = "";
           });
+          print("Placemark: ${placemark.toJson()}");
+        } else {
+          setState(() {
+            locationError = "No placemark data available.";
+          });
+          print("No placemarks found.");
         }
       }
     } catch (e) {
       setState(() {
         locationError = e.toString();
       });
+      print("Error fetching location: $locationError");
+    } finally {
+      EasyLoading.dismiss();
     }
   }
 
@@ -58,6 +68,8 @@ class AddLocationState extends State<AddLocation> {
         name: nameController.text,
         latitude: currentPosition!.latitude,
         longitude: currentPosition!.longitude,
+        street: streetName,
+        state: stateName
       );
       await DatabaseHelper().insertLocation(location.toMap());
       EasyLoading.showSuccess("Berhasil menambahkan lokasi",
@@ -101,12 +113,12 @@ class AddLocationState extends State<AddLocation> {
                   hintText: "Masukkan nama lokasi",
                 ),
                 validator: (v) {
-                      if (v!.isEmpty) {
-                        return "This field is required";
-                      } else {
-                        return null;
-                      }
-                    },
+                  if (v!.isEmpty) {
+                    return "This field is required";
+                  } else {
+                    return null;
+                  }
+                },
               ),
               const SizedBox(height: 16),
               if (currentPosition != null)
@@ -155,18 +167,14 @@ class AddLocationState extends State<AddLocation> {
                   ),
                 ),
               const Spacer(),
-              // ElevatedButton(
-              //   onPressed: getCurrentLocation,
-              //   child: const Text('Dapatkan Lokasi Terkini'),
-              // ),
               const SizedBox(height: 16),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                minimumSize: const Size(double.infinity, 50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  minimumSize: const Size(double.infinity, 50),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                 ),
-              ),
                 onPressed: saveLocation,
                 child: const Text('Simpan Lokasi'),
               ),
