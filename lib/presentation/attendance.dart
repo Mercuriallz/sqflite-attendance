@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:attend_mobile/constant/textstyle.dart';
 import 'package:attend_mobile/constant/utils/location.dart';
 import 'package:attend_mobile/db_offline/database.offline.dart';
@@ -193,7 +195,7 @@ class AddAttendanceState extends State<AddAttendance> {
             const SizedBox(height: 20),
             if (selectedLocation != null)
               Container(
-                padding: EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16.0),
                 decoration: BoxDecoration(
                   color: Colors.grey[200],
                   borderRadius: BorderRadius.circular(8),

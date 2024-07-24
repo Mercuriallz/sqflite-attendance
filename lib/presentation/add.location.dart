@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:attend_mobile/constant/textstyle.dart';
 import 'package:attend_mobile/constant/utils/location.dart';
 import 'package:attend_mobile/db_offline/database.offline.dart';
@@ -30,11 +32,11 @@ class AddLocationState extends State<AddLocation> {
   }
 
   Future<void> getCurrentLocation() async {
-    EasyLoading.show(status: 'Fetching location...');
+    EasyLoading.show(status: "Mohon tunggu... sedang mengambil koordinat lokasi anda");
     try {
       currentPosition = await LocationUtils.getCurrentLocation();
       if (currentPosition != null) {
-        print("Current position: ${currentPosition!.latitude}, ${currentPosition!.longitude}");
+        print("Current pos ==>>>: ${currentPosition!.latitude}, ${currentPosition!.longitude}");
         List<Placemark> placemarks = await placemarkFromCoordinates(
             currentPosition!.latitude, currentPosition!.longitude);
         if (placemarks.isNotEmpty) {
@@ -47,9 +49,8 @@ class AddLocationState extends State<AddLocation> {
           print("Placemark: ${placemark.toJson()}");
         } else {
           setState(() {
-            locationError = "No placemark data available.";
+            locationError = "Data kosong.";
           });
-          print("No placemarks found.");
         }
       }
     } catch (e) {
@@ -61,6 +62,8 @@ class AddLocationState extends State<AddLocation> {
       EasyLoading.dismiss();
     }
   }
+
+  //function submit absensi
 
   Future<void> saveLocation() async {
     if (currentPosition != null && formKey.currentState!.validate()) {
@@ -77,7 +80,7 @@ class AddLocationState extends State<AddLocation> {
 
       Navigator.pop(context);
     }
-  }
+  } // akhir dari function submit absen 
 
   @override
   void dispose() {
@@ -176,7 +179,7 @@ class AddLocationState extends State<AddLocation> {
                   ),
                 ),
                 onPressed: saveLocation,
-                child: const Text('Simpan Lokasi'),
+                child: const Text("Simpan Lokasi"),
               ),
             ],
           ),
