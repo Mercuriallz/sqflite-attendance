@@ -18,17 +18,17 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-
-    var isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
+    var isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
     var screenWidth = MediaQuery.of(context).size.width;
 
     var totalGrid = 0;
-    if(isLandscape) {
-      if(screenWidth > 700) {
+    if (isLandscape) {
+      if (screenWidth > 700) {
         totalGrid = 3;
       } else {
         totalGrid = 2;
-      } 
+      }
     } else {
       totalGrid = 2;
     }
@@ -41,57 +41,42 @@ class _HomeState extends State<Home> {
         primary: false,
         shrinkWrap: true,
         children: [
-
           buildMenuCard(
-                            onTap: () {
-                              Navigator.push(
+            onTap: () {
+              Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) => const AddAttendance()));
-            
-                            },
-                            icon: Icons.fingerprint,
-                            text: "Absensi",
-                            textColor: smallWhiteText,
-                            color: const Color(0xFF1C4963),
-                        
-                          ),
-
-                          buildMenuCard(
-                            onTap: () {
-                              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const AddLocation()));
-            
-                            },
-                            icon: Icons.add,
-                            text: "Tambah lokasi",
-                            textColor: smallWhiteText,
-                            color: const Color(0xFF1C4963),
-                        
-                          ),
-
+            },
+            icon: Icons.fingerprint,
+            text: "Absensi",
+            textColor: smallWhiteText,
+            color: const Color(0xFF1C4963),
+          ),
           buildMenuCard(
-                            onTap: () {
-                              Navigator.push(
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const AddLocation()));
+            },
+            icon: Icons.add,
+            text: "Tambah lokasi",
+            textColor: smallWhiteText,
+            color: const Color(0xFF1C4963),
+          ),
+          buildMenuCard(
+            onTap: () {
+              Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) => const AttendanceHistoryPage()));
-            
-                            },
-                            icon: Icons.timelapse,
-                            text: "Riwayat absensi",
-                            textColor: smallWhiteText,
-                            color: const Color(0xFF1C4963),
-                        
-                          ),
-      
-           
-          
-          
+            },
+            icon: Icons.timelapse,
+            text: "Riwayat absensi",
+            textColor: smallWhiteText,
+            color: const Color(0xFF1C4963),
+          ),
         ],
-        ),
+      ),
     );
   }
 }

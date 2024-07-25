@@ -136,10 +136,7 @@ class AddLocationState extends State<AddLocation> {
                     children: [
                       Text(
                         "* Informasi lokasi",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey[600],
-                        ),
+                        style: smallBlackTextB
                       ),
                       const SizedBox(height: 8),
                       Text(

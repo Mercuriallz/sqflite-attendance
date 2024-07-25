@@ -102,13 +102,13 @@ class AddAttendanceState extends State<AddAttendance> {
   saveAttendance() async {
     if (selectedLocation == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a location.')),
+        const SnackBar(content: Text("Harap pilih lokasi terlebih dahulu")),
       );
       return;
     }
     if (currentPosition == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please get your current location first.')),
+        const SnackBar(content: Text("Lokasi kosong")),
       );
       return;
     }
@@ -139,12 +139,12 @@ class AddAttendanceState extends State<AddAttendance> {
         Navigator.pop(context);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('You are more than 50 meters away from the location.')),
+          const SnackBar(content: Text("Jarak kamu dengan lokasi lebih dari 50M")),
         );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to save attendance: $e')),
+        SnackBar(content: Text("Failed to save attendance: $e")),
       );
     } finally {
       setState(() {

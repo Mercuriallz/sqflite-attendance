@@ -65,12 +65,12 @@ class AttendanceHistoryPageState extends State<AttendanceHistoryPage> {
                 final locationName = locationNames[attendance.locationId] ?? "Lokasi tidak diketahui";
 
                 return ListTile(
-                  title: Text('Attendance #${attendance.id}'),
+                  title: Text("Attendance #${attendance.id}"),
                   subtitle: Text(
-                    'Location: $locationName\n'
-                    'Timestamp: ${attendance.timestamp}\n'
-                    'Latitude: ${attendance.latitude}\n'
-                    'Longitude: ${attendance.longitude}',
+                    "Location: $locationName\n"
+                    "Timestamp: ${attendance.timestamp}\n"
+                    "Latitude: ${attendance.latitude}\n"
+                    "Longitude: ${attendance.longitude}",
                   ),
                 );
               },
