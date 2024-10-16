@@ -1,8 +1,7 @@
 import 'package:attend_mobile/constant/card.dart';
-import 'package:attend_mobile/constant/textstyle.dart';
-import 'package:attend_mobile/presentation/add.location.dart';
+import 'package:attend_mobile/presentation/add_location.dart';
 import 'package:attend_mobile/presentation/attendance.dart';
-import 'package:attend_mobile/presentation/history.attendance.dart';
+import 'package:attend_mobile/presentation/history_attendance.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 
@@ -22,24 +21,26 @@ class _HomeState extends State<Home> {
         MediaQuery.of(context).orientation == Orientation.landscape;
     var screenWidth = MediaQuery.of(context).size.width;
 
-    var totalGrid = 0;
-    if (isLandscape) {
-      if (screenWidth > 700) {
-        totalGrid = 3;
-      } else {
-        totalGrid = 2;
-      }
-    } else {
-      totalGrid = 2;
-    }
+    var totalGrid = isLandscape && screenWidth > 700 ? 3 : 2;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mobile Attendance'),
+        title: const Text(
+          'Mobile Attendance',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 22,
+            color: Colors.white,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: const Color(0xFF1C4963),
+        elevation: 0,
       ),
       body: GridView.count(
         crossAxisCount: totalGrid,
-        primary: false,
-        shrinkWrap: true,
+        crossAxisSpacing: 16,
+        mainAxisSpacing: 16,
         children: [
           buildMenuCard(
             onTap: () {
@@ -50,18 +51,16 @@ class _HomeState extends State<Home> {
             },
             icon: Icons.fingerprint,
             text: "Absensi",
-            textColor: smallWhiteText,
-            color: const Color(0xFF1C4963),
+            color: const Color(0xFF1C4966),
           ),
           buildMenuCard(
             onTap: () {
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => const AddLocation()));
             },
-            icon: Icons.add,
-            text: "Tambah lokasi",
-            textColor: smallWhiteText,
-            color: const Color(0xFF1C4963),
+            icon: Icons.add_location_alt_outlined,
+            text: "Tambah Lokasi",
+            color: const Color(0xFF1299A2),
           ),
           buildMenuCard(
             onTap: () {
@@ -70,10 +69,9 @@ class _HomeState extends State<Home> {
                   MaterialPageRoute(
                       builder: (context) => const AttendanceHistoryPage()));
             },
-            icon: Icons.timelapse,
-            text: "Riwayat absensi",
-            textColor: smallWhiteText,
-            color: const Color(0xFF1C4963),
+            icon: Icons.history,
+            text: "Riwayat Absensi",
+            color: const Color(0xFF12C8A3),
           ),
         ],
       ),

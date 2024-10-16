@@ -1,9 +1,8 @@
-// ignore_for_file: use_build_context_synchronously
-
-import 'package:attend_mobile/constant/textstyle.dart';
+import 'package:attend_mobile/constant/text_style.dart';
 import 'package:attend_mobile/constant/utils/location.dart';
-import 'package:attend_mobile/db_offline/database.offline.dart';
+import 'package:attend_mobile/db_offline/database_offline.dart';
 import 'package:attend_mobile/model/location.model.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:geocoding/geocoding.dart';
@@ -36,7 +35,9 @@ class AddLocationState extends State<AddLocation> {
     try {
       currentPosition = await LocationUtils.getCurrentLocation();
       if (currentPosition != null) {
-        print("Current pos ==>>>: ${currentPosition!.latitude}, ${currentPosition!.longitude}");
+        if (kDebugMode) {
+          print("Current pos ==>>>: ${currentPosition!.latitude}, ${currentPosition!.longitude}");
+        }
         List<Placemark> placemarks = await placemarkFromCoordinates(
             currentPosition!.latitude, currentPosition!.longitude);
         if (placemarks.isNotEmpty) {
@@ -46,7 +47,9 @@ class AddLocationState extends State<AddLocation> {
             streetName = placemark.street ?? "";
             locationError = "";
           });
-          print("Placemark: ${placemark.toJson()}");
+          if (kDebugMode) {
+            print("Placemark: ${placemark.toJson()}");
+          }
         } else {
           setState(() {
             locationError = "Data kosong.";
@@ -57,13 +60,13 @@ class AddLocationState extends State<AddLocation> {
       setState(() {
         locationError = e.toString();
       });
-      print("Error fetching location: $locationError");
+      if (kDebugMode) {
+        print("Error fetching location: $locationError");
+      }
     } finally {
       EasyLoading.dismiss();
     }
   }
-
-  //function submit absensi
 
   Future<void> saveLocation() async {
     if (currentPosition != null && formKey.currentState!.validate()) {
@@ -72,15 +75,16 @@ class AddLocationState extends State<AddLocation> {
         latitude: currentPosition!.latitude,
         longitude: currentPosition!.longitude,
         street: streetName,
-        state: stateName
+        state: stateName,
       );
       await DatabaseHelper().insertLocation(location.toMap());
-      EasyLoading.showSuccess("Berhasil menambahkan lokasi",
-          duration: const Duration(seconds: 3));
+      EasyLoading.showSuccess("Berhasil menambahkan lokasi", duration: const Duration(seconds: 3));
 
-      Navigator.pop(context);
+     if(mounted) {
+       Navigator.pop(context);
+     }
     }
-  } // akhir dari function submit absen 
+  }
 
   @override
   void dispose() {
@@ -125,37 +129,48 @@ class AddLocationState extends State<AddLocation> {
               ),
               const SizedBox(height: 16),
               if (currentPosition != null)
-                Container(
-                  padding: const EdgeInsets.all(16.0),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "* Informasi lokasi",
-                        style: smallBlackTextB
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        "Latitude: ${currentPosition!.latitude}",
-                        style: smallBlackText,
-                      ),
-                      Text(
-                        "Longitude: ${currentPosition!.longitude}",
-                        style: smallBlackText,
-                      ),
-                      Text(
-                        "Jalan: $streetName",
-                        style: smallBlackText,
-                      ),
-                      Text(
-                        "Provinsi: $stateName",
-                        style: smallBlackText,
-                      ),
-                    ],
+                Center( // Center the card
+                  child: Container(
+                    width: MediaQuery.of(context).size.width / 0.9,
+                    padding: const EdgeInsets.all(16.0),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 8.0,
+                          spreadRadius: 1.0,
+                          offset:  Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "* Informasi lokasi",
+                          style: smallBlackTextB,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          "Latitude: ${currentPosition!.latitude}",
+                          style: smallBlackText,
+                        ),
+                        Text(
+                          "Longitude: ${currentPosition!.longitude}",
+                          style: smallBlackText,
+                        ),
+                        Text(
+                          "Jalan: $streetName",
+                          style: smallBlackText,
+                        ),
+                        Text(
+                          "Provinsi: $stateName",
+                          style: smallBlackText,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               if (locationError.isNotEmpty)

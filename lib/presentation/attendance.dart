@@ -1,8 +1,7 @@
-// ignore_for_file: use_build_context_synchronously
 
-import 'package:attend_mobile/constant/textstyle.dart';
+import 'package:attend_mobile/constant/text_style.dart';
 import 'package:attend_mobile/constant/utils/location.dart';
-import 'package:attend_mobile/db_offline/database.offline.dart';
+import 'package:attend_mobile/db_offline/database_offline.dart';
 import 'package:attend_mobile/model/attendance.model.dart';
 import 'package:attend_mobile/model/location.model.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +31,7 @@ class AddAttendanceState extends State<AddAttendance> {
   void initState() {
     super.initState();
     loadLocations();
-    fetchCurrentLocation(); // Fetch location on initialization
+    fetchCurrentLocation();
   }
 
   loadLocations() async {
@@ -49,9 +48,11 @@ class AddAttendanceState extends State<AddAttendance> {
         )).toList();
       });
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+    if(mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Gagal mendapatkan lokasi $e")),
       );
+    }
     }
   }
 
@@ -125,7 +126,7 @@ class AddAttendanceState extends State<AddAttendance> {
         currentPosition!.longitude,
       );
 
-      if (distance <= 50) {
+      if (distance <= 50 ) {
         Attendance attendance = Attendance(
           locationId: selectedLocation!.id!,
           timestamp: DateTime.now(),
@@ -136,16 +137,21 @@ class AddAttendanceState extends State<AddAttendance> {
         );
         await DatabaseHelper().insertAttendance(attendance.toMap());
         EasyLoading.showSuccess("Berhasil attendance!");
-        Navigator.pop(context);
+        if(mounted) {
+                  Navigator.pop(context);
+
+        }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Jarak kamu dengan lokasi lebih dari 50M")),
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+     if(mounted) {
+       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Failed to save attendance: $e")),
       );
+     }
     } finally {
       setState(() {
         isSaving = false;
@@ -194,49 +200,64 @@ class AddAttendanceState extends State<AddAttendance> {
             ),
             const SizedBox(height: 20),
             if (selectedLocation != null)
-              Container(
-                padding: const EdgeInsets.all(16.0),
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Detail lokasi", style: mediumBlackTextB,),
-                    const SizedBox(height: 10),
-                    Text(
-                      "Lokasi: ${selectedLocation!.name}",
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      "Latitude: ${selectedLocation!.latitude}",
-                      style: smallBlackText
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      "Longitude: ${selectedLocation!.longitude}",
-                      style: smallBlackText,
-                    ),
-                    const SizedBox(height: 4),
-                     Text(
-                      "Jalan: $streetName",
-                      style: smallBlackText
-                    ),
-                     const SizedBox(height: 4),
-                     Text(
-                      "Provinsi: $stateName",
-                      style: smallBlackText
-                    ),
-                  ],
-                ),
-              ),
+  Center( 
+    child: Container(
+      width: MediaQuery.of(context).size.width / 0.9, 
+      padding: const EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: const [
+           BoxShadow(
+            color: Colors.black26,
+            blurRadius: 8.0,
+            spreadRadius: 1.0,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Detail lokasi",
+            style: largeBlackTextB.copyWith(fontSize: 18, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            "Lokasi: ${selectedLocation!.name}",
+            style: largeBlackTextB
+          ),
+          const SizedBox(height: 8),
+          Text(
+            "Latitude: ${selectedLocation!.latitude}",
+            style: smallGreyText,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            "Longitude: ${selectedLocation!.longitude}",
+            style: smallGreyText,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            "Jalan: ${selectedLocation!.street}",
+            style: smallGreyText,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            "Provinsi: $stateName",
+            style: smallGreyText,
+          ),
+        ],
+      ),
+    ),
+  ),
+
             const SizedBox(height: 20),
             distance != null ?
               Text(
                 "Jarak ke lokasi yang dipilih: ${distance!.toStringAsFixed(2)} meter",
-                style: mediumBlackTextB,
+                style: largeBlackTextB,
               ) : const SizedBox(),
             const Spacer(),
             ElevatedButton(
