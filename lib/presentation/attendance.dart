@@ -1,4 +1,4 @@
-
+import 'package:attend_mobile/constant/fake_gps.dart';
 import 'package:attend_mobile/constant/text_style.dart';
 import 'package:attend_mobile/constant/utils/location.dart';
 import 'package:attend_mobile/db_offline/database_offline.dart';
@@ -23,6 +23,7 @@ class AddAttendanceState extends State<AddAttendance> {
   bool isLoadingLocation = false;
   bool isSaving = false;
   double? distance;
+  Position? position;
 
   String stateName = "";
   String streetName = "";
@@ -48,11 +49,11 @@ class AddAttendanceState extends State<AddAttendance> {
         )).toList();
       });
     } catch (e) {
-    if(mounted) {
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Gagal mendapatkan lokasi $e")),
-      );
-    }
+          SnackBar(content: Text("Gagal mendapatkan lokasi $e")),
+        );
+      }
     }
   }
 
@@ -61,7 +62,7 @@ class AddAttendanceState extends State<AddAttendance> {
       isLoadingLocation = true;
     });
     try {
-      currentPosition = await LocationUtils.getCurrentLocation();
+      currentPosition = await LocationUtils.getCurrentLocation(context);
       if (selectedLocation != null && currentPosition != null) {
         List<Placemark> placemarks = await placemarkFromCoordinates(
             currentPosition!.latitude, currentPosition!.longitude);
@@ -126,7 +127,7 @@ class AddAttendanceState extends State<AddAttendance> {
         currentPosition!.longitude,
       );
 
-      if (distance <= 50 ) {
+      if (distance <= 50) {
         Attendance attendance = Attendance(
           locationId: selectedLocation!.id!,
           timestamp: DateTime.now(),
@@ -134,13 +135,12 @@ class AddAttendanceState extends State<AddAttendance> {
           longitude: currentPosition!.longitude,
           checkoutTimestamp: null,
           street: streetName,
-          state: stateName
+          state: stateName,
         );
         await DatabaseHelper().insertAttendance(attendance.toMap());
         EasyLoading.showSuccess("Berhasil attendance!");
-        if(mounted) {
-                  Navigator.pop(context);
-
+        if (mounted) {
+          Navigator.pop(context);
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -148,11 +148,11 @@ class AddAttendanceState extends State<AddAttendance> {
         );
       }
     } catch (e) {
-     if(mounted) {
-       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to save attendance: $e")),
-      );
-     }
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Failed to save attendance: $e")),
+        );
+      }
     } finally {
       setState(() {
         isSaving = false;
@@ -201,68 +201,73 @@ class AddAttendanceState extends State<AddAttendance> {
             ),
             const SizedBox(height: 20),
             if (selectedLocation != null)
-  Center( 
-    child: Container(
-      width: MediaQuery.of(context).size.width / 0.9, 
-      padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: const [
-           BoxShadow(
-            color: Colors.black26,
-            blurRadius: 8.0,
-            spreadRadius: 1.0,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Detail lokasi",
-            style: largeBlackTextB.copyWith(fontSize: 18, fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            "Lokasi: ${selectedLocation!.name}",
-            style: largeBlackTextB
-          ),
-          const SizedBox(height: 8),
-          Text(
-            "Latitude: ${selectedLocation!.latitude}",
-            style: smallGreyText,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            "Longitude: ${selectedLocation!.longitude}",
-            style: smallGreyText,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            "Jalan: ${selectedLocation!.street}",
-            style: smallGreyText,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            "Provinsi: ${selectedLocation!.state}",
-            style: smallGreyText,
-          ),
-        ],
-      ),
-    ),
-  ),
-
+              Center(
+                child: Container(
+                  width: MediaQuery.of(context).size.width / 0.9,
+                  padding: const EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 8.0,
+                        spreadRadius: 1.0,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Detail lokasi",
+                        style: largeBlackTextB.copyWith(fontSize: 18, fontWeight: FontWeight.w600),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        "Lokasi: ${selectedLocation!.name}",
+                        style: largeBlackTextB,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        "Latitude: ${selectedLocation!.latitude}",
+                        style: smallGreyText,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        "Longitude: ${selectedLocation!.longitude}",
+                        style: smallGreyText,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        "Jalan: ${selectedLocation!.street}",
+                        style: smallGreyText,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        "Provinsi: ${selectedLocation!.state}",
+                        style: smallGreyText,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             const SizedBox(height: 20),
-            distance != null ?
+            if (distance != null)
               Text(
                 "Jarak ke lokasi yang dipilih: ${distance!.toStringAsFixed(2)} meter",
                 style: largeBlackTextB,
-              ) : const SizedBox(),
+              ),
             const Spacer(),
             ElevatedButton(
-              onPressed: isSaving ? null : saveAttendance,
+              onPressed: () {
+                if (position?.isMocked ?? false) { 
+                  showFakeGPSAlert(context);
+                } else {
+                  isSaving ? null : saveAttendance(); 
+                }
+              },
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 50),
                 shape: RoundedRectangleBorder(
@@ -271,7 +276,7 @@ class AddAttendanceState extends State<AddAttendance> {
               ),
               child: isSaving
                   ? const CircularProgressIndicator()
-                  : const Text('Absen'),
+                  : const Text('Absen sekarang'),
             ),
           ],
         ),

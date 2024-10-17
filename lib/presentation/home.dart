@@ -1,10 +1,12 @@
 import 'package:attend_mobile/constant/card.dart';
 import 'package:attend_mobile/constant/text_style.dart';
+import 'package:attend_mobile/constant/utils/location.dart';
 import 'package:attend_mobile/presentation/add_location.dart';
 import 'package:attend_mobile/presentation/attendance.dart';
 import 'package:attend_mobile/presentation/history_attendance.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -15,6 +17,17 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   Placemark? placemark;
+  Position? position;
+
+  getCurrentLocation() async {
+    position = await LocationUtils.getCurrentLocation(context);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getCurrentLocation();
+  }
 
   @override
   Widget build(BuildContext context) {

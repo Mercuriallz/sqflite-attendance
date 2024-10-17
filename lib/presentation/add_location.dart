@@ -33,7 +33,7 @@ class AddLocationState extends State<AddLocation> {
   Future<void> getCurrentLocation() async {
     EasyLoading.show(status: "Mohon tunggu... sedang mengambil koordinat lokasi anda");
     try {
-      currentPosition = await LocationUtils.getCurrentLocation();
+      currentPosition = await LocationUtils.getCurrentLocation(context);
       if (currentPosition != null) {
         if (kDebugMode) {
           print("Current pos ==>>>: ${currentPosition!.latitude}, ${currentPosition!.longitude}");

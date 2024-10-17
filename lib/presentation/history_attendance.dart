@@ -1,7 +1,10 @@
+import 'package:attend_mobile/constant/fake_gps.dart';
 import 'package:attend_mobile/constant/text_style.dart';
+import 'package:attend_mobile/constant/utils/location.dart';
 import 'package:attend_mobile/db_offline/database_offline.dart';
 import 'package:attend_mobile/model/attendance.model.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart'; 
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
@@ -15,11 +18,15 @@ class AttendanceHistoryPage extends StatefulWidget {
 class AttendanceHistoryPageState extends State<AttendanceHistoryPage> {
   List<Attendance> attendances = [];
   Map<int, String> locationNames = {};
+  Position? position;
+
+  
 
   @override
   void initState() {
     super.initState();
     loadAttendances();
+    fetchCurrentPosition();
   }
 
   loadAttendances() async {
@@ -52,11 +59,23 @@ class AttendanceHistoryPageState extends State<AttendanceHistoryPage> {
     });
   }
 
+  fetchCurrentPosition() async {
+    try {
+      position = await LocationUtils.getCurrentLocation(context);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Gagal mendapatkan lokasi: $e")),
+        );
+      }
+    }
+  }
+
   Future<void> checkoutAttendance(int id) async {
     try {
       await DatabaseHelper().updateCheckout(id, DateTime.now());
       EasyLoading.showSuccess("Berhasil checkout!");
-      loadAttendances(); // Refresh data after checkout
+      loadAttendances(); // Refresh data setelah checkout
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -125,12 +144,18 @@ class AttendanceHistoryPageState extends State<AttendanceHistoryPage> {
                           const SizedBox(height: 4),
                           Text(
                             "Latitude: ${attendance.latitude}, Longitude: ${attendance.longitude}",
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
+                            style: smallGreyText
                           ),
                           const SizedBox(height: 16),
                           if (attendance.checkoutTimestamp == null)
                             ElevatedButton(
-                              onPressed: () => checkoutAttendance(attendance.id!),
+                              onPressed: () {
+                                if (position != null && position!.isMocked) {
+                                  showFakeGPSAlert(context);
+                                } else {
+                                  checkoutAttendance(attendance.id!);
+                                }
+                              },
                               child: const Text("Checkout"),
                             ),
                         ],

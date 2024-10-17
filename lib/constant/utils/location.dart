@@ -1,8 +1,9 @@
-
+import 'package:attend_mobile/constant/fake_gps.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:flutter/material.dart';
 
 class LocationUtils {
-  static Future<Position?> getCurrentLocation() async {
+  static Future<Position?> getCurrentLocation(BuildContext context) async {
     try {
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
@@ -17,7 +18,15 @@ class LocationUtils {
         }
       }
 
-      return await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+
+      if (position.isMocked) {
+        if (context.mounted) {
+          showFakeGPSAlert(context);
+        }
+      }
+
+      return position;
     } catch (e) {
       return Future.error('Failed to get current location: $e');
     }
