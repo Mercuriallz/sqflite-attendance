@@ -132,6 +132,7 @@ class AddAttendanceState extends State<AddAttendance> {
           timestamp: DateTime.now(),
           latitude: currentPosition!.latitude,
           longitude: currentPosition!.longitude,
+          checkoutTimestamp: null,
           street: streetName,
           state: stateName
         );
@@ -245,7 +246,7 @@ class AddAttendanceState extends State<AddAttendance> {
           ),
           const SizedBox(height: 4),
           Text(
-            "Provinsi: $stateName",
+            "Provinsi: ${selectedLocation!.state}",
             style: smallGreyText,
           ),
         ],
@@ -270,7 +271,7 @@ class AddAttendanceState extends State<AddAttendance> {
               ),
               child: isSaving
                   ? const CircularProgressIndicator()
-                  : const Text('Save Attendance'),
+                  : const Text('Absen'),
             ),
           ],
         ),

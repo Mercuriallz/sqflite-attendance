@@ -1,4 +1,5 @@
 import 'package:attend_mobile/constant/card.dart';
+import 'package:attend_mobile/constant/text_style.dart';
 import 'package:attend_mobile/presentation/add_location.dart';
 import 'package:attend_mobile/presentation/attendance.dart';
 import 'package:attend_mobile/presentation/history_attendance.dart';
@@ -25,13 +26,9 @@ class _HomeState extends State<Home> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        title:  Text(
           'Mobile Attendance',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 22,
-            color: Colors.white,
-          ),
+          style: standarWhiteText
         ),
         centerTitle: true,
         backgroundColor: const Color(0xFF1C4963),

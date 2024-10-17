@@ -21,7 +21,7 @@ final smallBlackText = GoogleFonts.poppins(
     fontSize: 12, color: Colors.black);
 
 final largeBlackText = GoogleFonts.poppins(
-    fontSize: 16, color: Colors.black, fontWeight: FontWeight.bold);
+    fontSize: 16, color: Colors.black,);
 
 
 final smallGreyText = GoogleFonts.poppins(

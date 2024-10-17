@@ -1,7 +1,9 @@
+import 'package:attend_mobile/constant/text_style.dart';
 import 'package:attend_mobile/db_offline/database_offline.dart';
 import 'package:attend_mobile/model/attendance.model.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; 
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class AttendanceHistoryPage extends StatefulWidget {
   const AttendanceHistoryPage({super.key});
@@ -40,6 +42,7 @@ class AttendanceHistoryPageState extends State<AttendanceHistoryPage> {
         id: e['id'],
         locationId: e['locationId'],
         timestamp: DateTime.parse(e['timestamp']),
+        checkoutTimestamp: e['checkoutTimestamp'] != null ? DateTime.parse(e['checkoutTimestamp']) : null,
         latitude: e['latitude'],
         longitude: e['longitude'],
         street: e['street'],
@@ -47,6 +50,20 @@ class AttendanceHistoryPageState extends State<AttendanceHistoryPage> {
       )).toList();
       this.locationNames = locationNames;
     });
+  }
+
+  Future<void> checkoutAttendance(int id) async {
+    try {
+      await DatabaseHelper().updateCheckout(id, DateTime.now());
+      EasyLoading.showSuccess("Berhasil checkout!");
+      loadAttendances(); // Refresh data after checkout
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Gagal melakukan checkout: $e")),
+        );
+      }
+    }
   }
 
   @override
@@ -66,6 +83,9 @@ class AttendanceHistoryPageState extends State<AttendanceHistoryPage> {
                   final attendance = attendances[i];
                   final locationName = locationNames[attendance.locationId] ?? "Lokasi tidak diketahui";
                   final formattedDate = DateFormat('dd MMM yyyy, HH:mm').format(attendance.timestamp);
+                  final checkoutDate = attendance.checkoutTimestamp != null
+                      ? DateFormat('dd MMM yyyy, HH:mm').format(attendance.checkoutTimestamp!)
+                      : "Belum checkout";
 
                   return Card(
                     margin: const EdgeInsets.only(bottom: 16),
@@ -80,9 +100,7 @@ class AttendanceHistoryPageState extends State<AttendanceHistoryPage> {
                         children: [
                           Text(
                             "Attendance #${attendance.id}",
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
+                            style: largeBlackTextB,
                           ),
                           const SizedBox(height: 8),
                           Text(
@@ -96,7 +114,12 @@ class AttendanceHistoryPageState extends State<AttendanceHistoryPage> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            "Tanggal: $formattedDate",
+                            "Check-in: $formattedDate",
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            "Check-out: $checkoutDate",
                             style: Theme.of(context).textTheme.bodyMedium,
                           ),
                           const SizedBox(height: 4),
@@ -104,6 +127,12 @@ class AttendanceHistoryPageState extends State<AttendanceHistoryPage> {
                             "Latitude: ${attendance.latitude}, Longitude: ${attendance.longitude}",
                             style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
                           ),
+                          const SizedBox(height: 16),
+                          if (attendance.checkoutTimestamp == null)
+                            ElevatedButton(
+                              onPressed: () => checkoutAttendance(attendance.id!),
+                              child: const Text("Checkout"),
+                            ),
                         ],
                       ),
                     ),

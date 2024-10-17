@@ -3,8 +3,8 @@ import 'package:path/path.dart';
 
 
 class DatabaseHelper {
-  static final DatabaseHelper _instance = DatabaseHelper._internal();
-  factory DatabaseHelper() => _instance;
+  static final DatabaseHelper instance = DatabaseHelper._internal();
+  factory DatabaseHelper() => instance;
 
   static Database? _database;
 
@@ -38,6 +38,7 @@ class DatabaseHelper {
         id INTEGER PRIMARY KEY,
         locationId INTEGER,
         timestamp TEXT,
+        checkoutTimestamp TEXT,
         latitude REAL,
         longitude REAL,
         street TEXT,
@@ -85,5 +86,28 @@ Future<Map<String, dynamic>?> getLocationById(int locationId) async {
     return result.first;
   }
   return null;
+}
+
+Future<Map<String, dynamic>?> getAttendanceById(int id) async {
+  Database db = await database;
+  List<Map<String, dynamic>> results = await db.query(
+    'attendances',
+    where: 'id = ?',
+    whereArgs: [id],
+  );
+  return results.isNotEmpty ? results.first : null;
+}
+
+
+Future<int> updateCheckout(int attendanceId, DateTime checkoutTimestamp) async {
+  Database db = await database;
+  return await db.update(
+    'attendances',
+    {
+      'checkoutTimestamp': checkoutTimestamp.toIso8601String(),
+    },
+    where: 'id = ?',
+    whereArgs: [attendanceId],
+  );
 }
 }

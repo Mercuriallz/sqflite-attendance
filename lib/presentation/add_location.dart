@@ -97,7 +97,7 @@ class AddLocationState extends State<AddLocation> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text("Tambah Lokasi"),
+        title:  Text("Tambah Lokasi", style: largeBlackText,),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -106,11 +106,9 @@ class AddLocationState extends State<AddLocation> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+               Text(
                 "Nama Lokasi",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
+                style: smallBlackText
               ),
               const SizedBox(height: 8),
               TextFormField(
@@ -121,7 +119,7 @@ class AddLocationState extends State<AddLocation> {
                 ),
                 validator: (v) {
                   if (v!.isEmpty) {
-                    return "This field is required";
+                    return "Nama lokasi harus di isi!";
                   } else {
                     return null;
                   }
@@ -173,14 +171,7 @@ class AddLocationState extends State<AddLocation> {
                     ),
                   ),
                 ),
-              if (locationError.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(top: 16.0),
-                  child: Text(
-                    locationError,
-                    style: const TextStyle(color: Colors.red),
-                  ),
-                ),
+             
               const Spacer(),
               const SizedBox(height: 16),
               ElevatedButton(
